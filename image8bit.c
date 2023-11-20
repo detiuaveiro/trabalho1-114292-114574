@@ -172,10 +172,10 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (0 < maxval && maxval <= PixMax);
   
   // Insert your code here!
-  Image img =(Image*)malloc(sizeof(Image));  // alocar espaço para a estrutura
+  Image img =(Image)malloc(sizeof(struct image));  // alocar espaço para a estrutura
   if (img==NULL){
-    //errno
-    //errCause
+    errno=1;
+    errCause="Erro na alocação de memória";
     return NULL;
   }
 
@@ -184,10 +184,10 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   img->maxval=maxval;
   img->pixel = calloc(width*height, sizeof(uint8)); // alocar espaço para o array de pixeis e atribui 0 a todos os elementos
   if(img->pixel==NULL){
-    //errno
-    //errCause
+    errno=1;
+    errCause="Erro na alocação de memória";
+    free(img);
     return NULL;
-  // Libertar?
   }
   return img;
 }
@@ -202,7 +202,7 @@ void ImageDestroy(Image* imgp){
   assert (imgp != NULL);
   
   // Insert your code here!
-  if(imgp!=NULL){
+  if(*imgp!=NULL){
     free((*imgp)->pixel);    // libertar o espaço alocado para o array de pixeis
     free(*imgp);             // libertar o espaço alocado para a Img
     (*imgp) =NULL;           /// Ensures: (*imgp)==NULL
@@ -319,7 +319,26 @@ int ImageMaxval(Image img) { ///
 /// *max is set to the maximum.
 void ImageStats(Image img, uint8* min, uint8* max) { ///
   assert (img != NULL);
+  assert (min != NULL);
+  assert (max != NULL);
+
+
   // Insert your code here!
+
+  *min = img->pixel[0];                              // inicializar o min e o max com o primeiro elemento do array
+  *max = img->pixel[0];
+
+  for(int y=0; y<img->height;y++){
+    for(int x=0; x<img->width;x++){
+    uint8 pixel = imageGetPixel(img,x,y);
+    if(pixel<*min){                                 // se o pixel for menor que o min, o min passa a ser o pixel
+      *min=pixel;
+    }
+    if(pixel>*max){                                 // se o pixel for maior que o max, o max passa a ser o pixel
+      *max=pixel;
+    }
+    }
+  }
 }
 
 /// Check if pixel position (x,y) is inside img.
