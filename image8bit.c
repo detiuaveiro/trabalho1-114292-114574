@@ -10,11 +10,11 @@
 /// 2013, 2023
 
 // Student authors (fill in below):
-// NMec:  Name:
+// NMec: 114574  Name:  Gonçalo Leal
 // 
 // 
 // 
-// Date:
+// Date:20/11/2023
 //
 
 #include "image8bit.h"
@@ -158,7 +158,6 @@ void ImageInit(void) { ///
 
 
 /// Image management functions
-
 /// Create a new black image.
 ///   width, height : the dimensions of the new image.
 ///   maxval: the maximum gray level (corresponding to white).
@@ -171,8 +170,28 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (width >= 0);
   assert (height >= 0);
   assert (0 < maxval && maxval <= PixMax);
+  
   // Insert your code here!
+  Image img =(Image*)malloc(sizeof(Image));  // alocar espaço para a estrutura
+  if (img==NULL){
+    //errno
+    //errCause
+    return NULL;
+  }
+
+  img->width=width; // atribuir valores a width, height e maxval
+  img->height = height;
+  img->maxval=maxval;
+  img->pixel = calloc(width*height, sizeof(uint8)); // alocar espaço para o array de pixeis e atribui 0 a todos os elementos
+  if(img->pixel==NULL){
+    //errno
+    //errCause
+    return NULL;
+  // Libertar?
+
+  return img;
 }
+
 
 /// Destroy the image pointed to by (*imgp).
 ///   imgp : address of an Image variable.
@@ -181,7 +200,14 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 /// Should never fail, and should preserve global errno/errCause.
 void ImageDestroy(Image* imgp) { ///
   assert (imgp != NULL);
+  
   // Insert your code here!
+if(imgp!=NULL){
+  free((*imgp)->pixel);    // libertar o espaço alocado para o array de pixeis
+  free(*imgp);             // libertar o espaço alocado para a Img
+  (*imgp)==NULL;           /// Ensures: (*imgp)==NULL.
+}
+  
 }
 
 
@@ -209,6 +235,7 @@ static int skipComments(FILE* f) {
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageLoad(const char* filename) { ///
   int w, h;
+  
   int maxval;
   char c;
   FILE* f = NULL;
