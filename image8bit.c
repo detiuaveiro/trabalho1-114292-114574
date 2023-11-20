@@ -188,7 +188,7 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
     //errCause
     return NULL;
   // Libertar?
-
+  }
   return img;
 }
 
@@ -198,16 +198,15 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 /// If (*imgp)==NULL, no operation is performed.
 /// Ensures: (*imgp)==NULL.
 /// Should never fail, and should preserve global errno/errCause.
-void ImageDestroy(Image* imgp) { ///
+void ImageDestroy(Image* imgp){ 
   assert (imgp != NULL);
   
   // Insert your code here!
-if(imgp!=NULL){
-  free((*imgp)->pixel);    // libertar o espaço alocado para o array de pixeis
-  free(*imgp);             // libertar o espaço alocado para a Img
-  (*imgp)==NULL;           /// Ensures: (*imgp)==NULL.
-}
-  
+  if(imgp!=NULL){
+    free((*imgp)->pixel);    // libertar o espaço alocado para o array de pixeis
+    free(*imgp);             // libertar o espaço alocado para a Img
+    (*imgp) =NULL;           /// Ensures: (*imgp)==NULL
+  } 
 }
 
 
