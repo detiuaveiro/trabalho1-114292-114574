@@ -351,6 +351,7 @@ int ImageValidPos(Image img, int x, int y) { ///
 int ImageValidRect(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
   // Insert your code here!
+  return (0 <= x && x < img->width) && (0 <= y && y < img->height) && (0 <= x+w && x+w < img->width) && (0 <= y+h && y+h < img->height);
 }
 
 /// Pixel get & set operations
@@ -445,7 +446,7 @@ void ImageBrighten(Image img, double factor) { ///
       if(color*factor>img->maxval){
         ImageSetPixel(img,x,y,img->maxval); //Se color*fatorial>img->maxval então satura no maxval ImageSetPixel(img,x,y,img->maxval)
       }else{
-        ImageSetPixel(img,x,y,color*factor); //Se não, o pixel fica com o valor color*fatorial ImageSetPixel(img,x,y,color*factor)
+        ImageSetPixel(img,x,y,(color*factor)+0.5); //Se não, o pixel fica com o valor color*fatorial ImageSetPixel(img,x,y,color*factor)
       }
     }
   }
