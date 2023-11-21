@@ -328,14 +328,14 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
   *min = img->pixel[0];                              // inicializar o min e o max com o primeiro elemento do array
   *max = img->pixel[0];
 
-  for(int y=0; y<img->height;y++){
+  for(int y=0; y<img->height;y++){                   //Analisar pixel a pixel
     for(int x=0; x<img->width;x++){
-    uint8 pixels = ImageGetPixel(img,x,y);
-    if(pixels<*min){                                 // se o pixel for menor que o min, o min passa a ser o pixel
-      *min=pixels;
+    uint8 color = ImageGetPixel(img,x,y);
+    if(color<*min){                                 // se o pixel for menor que o min, o min passa a ser o pixel
+      *min=color;
     }
-    if(pixels>*max){                                 // se o pixel for maior que o max, o max passa a ser o pixel
-      *max=pixels;
+    if(color>*max){                                 // se o pixel for maior que o max, o max passa a ser o pixel
+      *max=color;
     }
     }
   }
@@ -366,7 +366,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 static inline int G(Image img, int x, int y) {
   int index;
   // Insert your code here!
-  index = (y *(img)->width) + x; // index = (y * width) + x
+  index = (y *(img)->width) + x;
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -402,6 +402,12 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 void ImageNegative(Image img) { ///
   assert (img != NULL);
   // Insert your code here!
+  for(int x=0;x<img->width;x++){                    //Analisar pixel a pixel
+    for(int y=0;y<img->height;y++){                 
+      uint8 color= ImageGetPixel(img,x,y);          //Guardar o valor do pixel
+      ImageSetPixel(img,x,y,img->maxval-color);     //Subtrair o valor do pixel ao maxval e guardar no pixel
+    }
+  }
 }
 
 /// Apply threshold to image.
@@ -410,6 +416,18 @@ void ImageNegative(Image img) { ///
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
   // Insert your code here!
+  for(int x=0; x< img->width;x++){          //Analisar pixel a pixel
+    for(int y=0; y< img->height;y++){
+      uint8 color= ImageGetPixel(img,x,y);  //Guardar o valor do pixel
+      if(color<thr){
+        ImageSetPixel(img,x,y,0);     //se (color<thr) então o pixel fica preto ImageSetPixel(img,x,y,0)
+      }
+      if(color>=thr){
+        ImageStePixel(img,x,y,img->maxval); //se (colo=thr) então o pixel fica branco ImageSetPixel(img,x,y,img->maxval)
+      }
+    }
+  }
+
 }
 
 /// Brighten image by a factor.
@@ -418,8 +436,20 @@ void ImageThreshold(Image img, uint8 thr) { ///
 /// darken the image if factor<1.0.
 void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
-  // ? assert (factor >= 0.0);
+  assert (factor >= 0.0);
   // Insert your code here!
+
+  for(int x=0; x<img->width;x++){           //Analisar pixel a pixel
+    for(int y=0; y<img->height;y++){
+      uint8 color= ImageGetPixel(img,x,y);  //Guardar o valor do pixel
+      if(color*factor>img->maxval){
+        ImageSetPixel(img,x,y,img->maxval); //Se color*fatorial>img->maxval então satura no maxval ImageSetPixel(img,x,y,img->maxval)
+      }else{
+        ImageSetPixel(img,x,y,color*factor); //Se não, o pixel fica com o valor color*fatorial ImageSetPixel(img,x,y,color*factor)
+      }
+    }
+  }
+
 }
 
 
