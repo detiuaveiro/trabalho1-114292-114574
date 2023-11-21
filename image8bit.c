@@ -330,12 +330,12 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
 
   for(int y=0; y<img->height;y++){
     for(int x=0; x<img->width;x++){
-    uint8 pixel = imageGetPixel(img,x,y);
-    if(pixel<*min){                                 // se o pixel for menor que o min, o min passa a ser o pixel
-      *min=pixel;
+    uint8 pixels = ImageGetPixel(img,x,y);
+    if(pixels<*min){                                 // se o pixel for menor que o min, o min passa a ser o pixel
+      *min=pixels;
     }
-    if(pixel>*max){                                 // se o pixel for maior que o max, o max passa a ser o pixel
-      *max=pixel;
+    if(pixels>*max){                                 // se o pixel for maior que o max, o max passa a ser o pixel
+      *max=pixels;
     }
     }
   }
