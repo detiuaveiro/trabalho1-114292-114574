@@ -423,7 +423,7 @@ void ImageThreshold(Image img, uint8 thr) { ///
         ImageSetPixel(img,x,y,0);     //se (color<thr) então o pixel fica preto ImageSetPixel(img,x,y,0)
       }
       if(color>=thr){
-        ImageStePixel(img,x,y,img->maxval); //se (colo=thr) então o pixel fica branco ImageSetPixel(img,x,y,img->maxval)
+        ImageSetPixel(img,x,y,img->maxval); //se (colo=thr) então o pixel fica branco ImageSetPixel(img,x,y,img->maxval)
       }
     }
   }
