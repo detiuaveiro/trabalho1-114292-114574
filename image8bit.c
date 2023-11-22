@@ -446,7 +446,7 @@ void ImageBrighten(Image img, double factor) { ///
       if(color*factor>img->maxval){
         ImageSetPixel(img,x,y,img->maxval); //Se color*fatorial>img->maxval então satura no maxval ImageSetPixel(img,x,y,img->maxval)
       }else{
-        ImageSetPixel(img,x,y,(color*factor)+0.5); //Se não, o pixel fica com o valor color*fatorial ImageSetPixel(img,x,y,color*factor)
+        ImageSetPixel(img,x,y,(color*factor)+0.5); //Se não, o pixel fica com o valor color*fatorial ImageSetPixel(img,x,y,(color*factor)+0.5)
       }
     }
   }
@@ -478,6 +478,23 @@ void ImageBrighten(Image img, double factor) { ///
 Image ImageRotate(Image img) { ///
   assert (img != NULL);
   // Insert your code here!
+  Image img2 = ImageCreate(img->width, img->height,img->maxval); //criar uma imagem com as dimensões da original
+  if(img2==NULL){ //verificar se a imagem foi criada
+    errno=1;
+    errCause="Erro na alocação de memória";
+    return NULL;
+  }
+
+  for(int x = img->width - 1; x >= 0; x--) {           // Ler a primeira linha começando na ultima coluna
+    for(int y = 0; y < img->height; y++) {          
+
+      uint8 color= ImageGetPixel(img,x,y);  //Guardar o valor do pixel
+
+      ImageSetPixel(img2,y,img->width-x-1,color); //Guardar o valor do pixel na imagem nova, invertendo a posição x e y, dando o efeito de rotação
+
+  }
+  }
+  return img2; //devolve a imagem espelhada
 }
 
 /// Mirror an image = flip left-right.
@@ -489,7 +506,25 @@ Image ImageRotate(Image img) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageMirror(Image img) { ///
   assert (img != NULL);
-  // Insert your code here!
+ // Insert your code here!
+  Image img2 = ImageCreate(img->width, img->height,img->maxval); //criar uma imagem com as dimensões da original
+  if(img2==NULL){ //verificar se a imagem foi criada
+    errno=1;
+    errCause="Erro na alocação de memória";
+    return NULL;
+  }
+
+  for(int x=0; x<img->width;x++){           //Analisar pixel a pixel
+    for(int y=0; y<img->height;y++){
+
+      uint8 color= ImageGetPixel(img,x,y);  //Guardar o valor do pixel
+
+      ImageSetPixel(img2,img->width-x-1,y,color); //Guardar o valor do pixel na imagem nova, invertendo a posição x, dando o efeito espelhado
+    }
+
+  }
+  return img2; //devolve a imagem espelhada
+
 }
 
 /// Crop a rectangular subimage from img.
