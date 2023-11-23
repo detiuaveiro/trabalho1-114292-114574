@@ -611,7 +611,25 @@ for(int linha=0;linha<img2->width;linha++){
   }
 }
 
-
+/// Compare an image to a subimage of a larger image.
+/// Returns 1 (true) if img2 matches subimage of img1 at pos (x, y).
+/// Returns 0, otherwise.
+int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
+  assert (img1 != NULL);
+  assert (img2 != NULL);
+  assert (ImageValidPos(img1, x, y));
+  // Insert your code here!
+   for(int linha=0;linha<img2->width;linha++){          //Analisar pixel a pixel a imagem img2
+    for(int coluna=0;coluna<img2->height;coluna++){
+      uint8 color1= ImageGetPixel(img1,x+linha,y+coluna); //Guardar os valores dos pixeis da img1 e da img2 na mesma posição
+      uint8 color2= ImageGetPixel(img2,linha,coluna);
+      if(color1!=color2){                                //Comparar os valores dos pixeis e returnar 1 se forem iguais e 0 se forem diferentes
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
 
 /// If a match is found, returns 1 and matching position is set in vars (*px, *py).
 /// If no match is found, returns 0 and (*px, *py) are left untouched.
@@ -619,6 +637,7 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   // Insert your code here!
+
 }
 
 
