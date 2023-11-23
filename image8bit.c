@@ -541,8 +541,24 @@ Image ImageMirror(Image img) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageCrop(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
-  assert (ImageValidRect(img, x, y, w, h));
+  assert (ImageValidRect(img, x, y, w, h));  //verificar se a imagem pedida está dentro da original
   // Insert your code here!
+    Image img2 = ImageCreate(w,h,img->maxval); //criar uma imagem com as dimensões pedidas mas com o maxval igual á imagem original
+  if(img2==NULL){                              //verificar se a imagem foi criada
+    errno=1;
+    errCause="Erro na alocação de memória";
+    return NULL;
+  }
+
+  for(int linha=0;linha<w;linha++){        //Analisar pixel a pixel desde a posição x,y até x+w,y+h
+    for(int coluna=0;coluna<h;coluna++){
+      uint8 color=ImageGetPixel(img,x+linha,y+coluna);   //Guardar o valor do pixel da posição x+linha,y+coluna  
+      ImageSetPixel(img2,linha,coluna,color);            //Guardar o valor do pixel na imagem nova
+    }
+
+  }
+  return img2;                               //devolve a imagem cortada
+
 }
 
 
@@ -555,9 +571,16 @@ Image ImageCrop(Image img, int x, int y, int w, int h) { ///
 void ImagePaste(Image img1, int x, int y, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
-  assert (ImageValidRect(img1, x, y, img2->width, img2->height));
+  assert (ImageValidRect(img1, x, y, img2->width, img2->height));  //verificar se a imagem pedida está dentro da original
   // Insert your code here!
+  for (int linha =0; linha<img2->width;linha++){                   //Analisar pixel a pixel a imagem img2
+    for(int coluna=0;coluna<img2->height;coluna++){
+      uint8 color= ImageGetPixel(img2,linha,coluna);               //Guardar o valor do pixel
+      ImageSetPixel(img1,x+linha,y+coluna,color);                   //Alterar na imagem original o pixel (x+linha,y+coluna) pelo valor do pixel da imagem img2
+    }
+  } 
 }
+   
 
 /// Blend an image into a larger image.
 /// Blend img2 into position (x, y) of img1.
@@ -580,7 +603,18 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
   // Insert your code here!
+   for(int linha=0;linha<img2->width;linha++){          //Analisar pixel a pixel a imagem img2
+    for(int coluna=0;coluna<img2->height;coluna++){
+      uint8 color1= ImageGetPixel(img1,x+linha,y+coluna); //Guardar os valores dos pixeis da img1 e da img2 na mesma posição
+      uint8 color2= ImageGetPixel(img2,linha,coluna);
+      if(color1!=color2){                                //Comparar os valores dos pixeis e returnar 1 se forem iguais e 0 se forem diferentes
+        return 0;
+      }
+    }
+  }
+  return 1;
 }
+
 
 /// Locate a subimage inside another image.
 /// Searches for img2 inside img1.
