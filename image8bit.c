@@ -593,31 +593,24 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));
   // Insert your code here!
-}
-
-/// Compare an image to a subimage of a larger image.
-/// Returns 1 (true) if img2 matches subimage of img1 at pos (x, y).
-/// Returns 0, otherwise.
-int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
-  assert (img1 != NULL);
-  assert (img2 != NULL);
-  assert (ImageValidPos(img1, x, y));
-  // Insert your code here!
-   for(int linha=0;linha<img2->width;linha++){          //Analisar pixel a pixel a imagem img2
+for(int linha=0;linha<img2->width;linha++){
     for(int coluna=0;coluna<img2->height;coluna++){
-      uint8 color1= ImageGetPixel(img1,x+linha,y+coluna); //Guardar os valores dos pixeis da img1 e da img2 na mesma posição
-      uint8 color2= ImageGetPixel(img2,linha,coluna);
-      if(color1!=color2){                                //Comparar os valores dos pixeis e returnar 1 se forem iguais e 0 se forem diferentes
-        return 0;
+      uint8 color1=ImageGetPixel(img1,x+linha,y+coluna); 
+      uint8 color2=ImageGetPixel(img2,linha,coluna);    //Guardar os valores dos pixeis da img1 e da img2 na mesma posição
+
+      uint8 blendedColor= ((color2*alpha)+(color1*(1-alpha))+0.5); //Calcular o valor do novo pixel, se alpha=1 então o pixel fica com o valor da img2, se alpha=0 então o pixel fica com o valor da img1
+
+      if(blendedColor>img1->maxval){                          //Verificar se o valor do novo pixel é maior que o maxval
+         ImageSetPixel(img1,x+linha,y+coluna,img1->maxval);   //Se for maior que o maxval, atribuir ao pixel o maxval
+      }else{
+        ImageSetPixel(img1,x+linha,y+coluna,blendedColor);    //Se não for maiorque o maxval, atribuir o valor calculado
       }
     }
   }
-  return 1;
 }
 
 
-/// Locate a subimage inside another image.
-/// Searches for img2 inside img1.
+
 /// If a match is found, returns 1 and matching position is set in vars (*px, *py).
 /// If no match is found, returns 0 and (*px, *py) are left untouched.
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
