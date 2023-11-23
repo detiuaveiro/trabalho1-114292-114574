@@ -600,10 +600,12 @@ for(int linha=0;linha<img2->width;linha++){
 
       uint8 blendedColor= ((color2*alpha)+(color1*(1-alpha))+0.5); //Calcular o valor do novo pixel, se alpha=1 então o pixel fica com o valor da img2, se alpha=0 então o pixel fica com o valor da img1
 
+
+       //Over/underflows
       if(blendedColor>img1->maxval){                          //Verificar se o valor do novo pixel é maior que o maxval
          ImageSetPixel(img1,x+linha,y+coluna,img1->maxval);   //Se for maior que o maxval, atribuir ao pixel o maxval
       }else{
-        ImageSetPixel(img1,x+linha,y+coluna,blendedColor);    //Se não for maiorque o maxval, atribuir o valor calculado
+        ImageSetPixel(img1,x+linha,y+coluna,blendedColor);//Se não for maior que o maxval, atribuir o valor calculado
       }
     }
   }
