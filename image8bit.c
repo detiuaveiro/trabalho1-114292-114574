@@ -637,7 +637,16 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   // Insert your code here!
-
+  for(int linha=0;linha<img2->width;linha++){          //Analisar pixel a pixel a imagem img2
+    for(int coluna=0;coluna<img2->height;coluna++){
+      if(ImageMatchSubImage(img1,linha,coluna,img2)==1){ //Verificar se a imagem img1 é igual a uma subimagem da imagem img2
+        *px=linha;                                        //Se for igual, atribuir a linha e a coluna a px e py
+        *py=coluna;
+        return 1;
+      }
+    }
+  }
+  return 0;
 }
 
 
