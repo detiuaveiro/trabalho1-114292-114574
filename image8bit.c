@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "instrumentation.h"
 
 // The data structure
@@ -657,6 +658,42 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) { ///
-  // Insert your code here!
-}
+  assert (img != NULL);
+  assert (dx >= 0);
+  assert (dy >= 0);
 
+
+  Image img2 = ImageCreate(img->width, img->height, img->maxval);   //Clonar a imagem original
+
+  
+  for (int x = 0; x < img->width; x++) {
+    for (int y = 0; y < img->height; y++) {                //Analisar pixel a pixel 
+      double soma = 0;
+      double count = 0;
+
+      
+      for (int i = x - dx; i <= x + dx; i++) {
+        for (int j = y - dy; j <= y + dy; j++) {
+          if (i >= 0 && i < img->width && j >= 0 && j < img->height) {    //Verificar se o pixel está dentro da imagem
+            soma += ImageGetPixel(img, i, j);                             //Obter o valor do pixel e somar
+            count++;
+          }
+        }
+      }
+
+      
+      uint8 final_color = round(soma / count);  //Dividir pelo count para calcular média e arredondar para o inteiro mais próximo
+      ImageSetPixel(img2, x, y, final_color);   //Guardar o valor do pixel em img2
+    }
+  }
+
+  
+  for (int x = 0; x < img->width; x++) {
+    for (int y = 0; y < img->height; y++) {
+      uint8 blurredPixel = ImageGetPixel(img2, x, y);
+      ImageSetPixel(img, x, y, blurredPixel);          //Aplicar o filtro na imagem Original
+    }
+  }
+  ImageDestroy(&img2);       // libertar o espaço alocado para a Img
+}
+  
