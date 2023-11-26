@@ -18,6 +18,7 @@
 //
 
 #include "image8bit.h"
+#include "instrumentation.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -663,43 +664,52 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
-void ImageBlur(Image img, int dx, int dy) { ///
+void ImageBlur(Image img, int dx, int dy) {
   assert (img != NULL);
   assert (dx >= 0);
   assert (dy >= 0);
 
+  InstrReset(); 
 
-  Image img2 = ImageCreate(img->width, img->height, img->maxval);   //Clonar a imagem original
-
+  Image img2 = ImageCreate(img->width, img->height, img->maxval);   // Criar uma nova imagem com as mesmas dimensões da imagem original e com o mesmo maxval
+   
+  int matr[img->width+1][img->height+1]; // Criar uma matriz para armazenar a soma cumulativa dos pixels da imagem
   
-  for (int x = 0; x < img->width; x++) {
-    for (int y = 0; y < img->height; y++) {                //Analisar pixel a pixel 
-      double soma = 0;
-      double count = 0;
-
-      
-      for (int i = x - dx; i <= x + dx; i++) {
-        for (int j = y - dy; j <= y + dy; j++) {
-          if (i >= 0 && i < img->width && j >= 0 && j < img->height) {    //Verificar se o pixel está dentro da imagem
-            soma += ImageGetPixel(img, i, j);                             //Obter o valor do pixel e somar
-            count++;
-          }
-        }
+  for (int x = 0; x <= img->width; x++) { // Preencher a matriz 
+    for (int y = 0; y <= img->height; y++) {
+      if (x == 0 || y == 0) {
+        matr[x][y] = 0;
+      } else {
+        matr[x][y] = ImageGetPixel(img, x-1, y-1) + matr[x-1][y] + matr[x][y-1] - matr[x-1][y-1];
       }
-
-      
-      uint8 final_color = round(soma / count);  //Dividir pelo count para calcular média e arredondar para o inteiro mais próximo
-      ImageSetPixel(img2, x, y, final_color);   //Guardar o valor do pixel em img2
     }
   }
 
   
+  for (int x = 0; x < img->width; x++) {               // Percorrer a imagem original
+    for (int y = 0; y < img->height; y++) {
+      
+      int x1 = fmax(0, x-dx);
+      int y1 = fmax(0, y-dy);                             //Garantir que as coordenadas do retângulo de vizinhança do pixel atual não ultrapassem os limites da imagem
+      int x2 = fmin(img->width, x+dx+1);
+      int y2 = fmin(img->height, y+dy+1);
+      
+      int sum = matr[x2][y2] - matr[x1][y2] - matr[x2][y1] + matr[x1][y1];    //Calcular a soma dos pixels na vizinhança usando a matriz
+      int count = (x2-x1) * (y2-y1);                      //Calcular o número de pixels na vizinhança
+      
+      uint8 final_color = round((double)sum / count);    //Calcular a cor final do pixel borrado
+     
+      ImageSetPixel(img2, x, y, final_color);  //Guardar o valor do pixel novo na imag2
+    }
+  }
   for (int x = 0; x < img->width; x++) {
     for (int y = 0; y < img->height; y++) {
       uint8 blurredPixel = ImageGetPixel(img2, x, y);
-      ImageSetPixel(img, x, y, blurredPixel);          //Aplicar o filtro na imagem Original
+      ImageSetPixel(img, x, y, blurredPixel);     //Aplicar o filtro na imagem original
     }
   }
-  ImageDestroy(&img2);       // libertar o espaço alocado para a Img
+  ImageDestroy(&img2); //Libertar a memória alocada para a img2
+  InstrPrint();
 }
+
   
