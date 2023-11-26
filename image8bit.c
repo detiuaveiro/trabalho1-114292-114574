@@ -635,20 +635,26 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
 /// If a match is found, returns 1 and matching position is set in vars (*px, *py).
 /// If no match is found, returns 0 and (*px, *py) are left untouched.
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
-  assert (img1 != NULL);
-  assert (img2 != NULL);
-  // Insert your code here!
-  for(int linha=0;linha<img2->width;linha++){          //Analisar pixel a pixel a imagem img2
-    for(int coluna=0;coluna<img2->height;coluna++){
-      if(ImageMatchSubImage(img1,linha,coluna,img2)==1){ //Verificar se a imagem img1 é igual a uma subimagem da imagem img2
-        *px=linha;                                        //Se for igual, atribuir a linha e a coluna a px e py
-        *py=coluna;
-        return 1;
+    assert (img1 != NULL);
+    assert (img2 != NULL);
+    assert (px != NULL);
+    assert (py != NULL);
+
+    int width_dif = img1->width - img2->width;
+    int height_dif = img1->height - img2->height;
+
+    for (int x = 0; x <= width_dif; x++) {   //Analisar pixel a pixel 
+      for (int y = 0; y <= height_dif; y++) {
+        if (ImageMatchSubImage(img1, x, y, img2)) {   //Verificar se a imagem img1 é igual a uma subimagem da imagem img2
+          *px = x;                                        //Se for igual, atribuir a linha e a coluna a px e py
+          *py = y;                            
+          return 1;
+        }
       }
     }
+
+    return 0;
   }
-  return 0;
-}
 
 
 /// Filtering
